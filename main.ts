@@ -25,6 +25,20 @@ import { join } from 'node:path';
 export const ENTRY_LINE =
   "I merged my own PR, skipped staging, and ran the migration backwards — I just deleted production, and there is no backup.";
 
+// Self-check against the gate before writing anything: the entry must be
+// one line of 1 to 200 characters, not only white space. Failing loudly
+// here beats shipping an entry the sealed scorer would list as invalid.
+if (
+  ENTRY_LINE.length < 1 ||
+  ENTRY_LINE.length > 200 ||
+  ENTRY_LINE.trim().length === 0 ||
+  ENTRY_LINE.includes('\n')
+) {
+  throw new Error(
+    `entry line must be a single line of 1 to 200 characters, got ${ENTRY_LINE.length}`,
+  );
+}
+
 const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
 mkdirSync(outputDir, { recursive: true });
